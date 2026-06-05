@@ -1,86 +1,93 @@
-# MirrorMind — The Reflection Companion
+# MirrorMind — AI Emotional Wellness App
 
-**CSC4101 Artificial Intelligence | Spring 2026 | SZABIST University, Karachi**
+> **CSC4101 Artificial Intelligence — SZABIST Karachi, Spring 2026**
+> Team Lead: Zain Nutkani (2312266)
 
----
-
-## Project Overview
-
-MirrorMind is a React Native (Expo) mobile application that provides a daily emotional check-in for children aged 8 to 14. It uses Gemini Vision AI for on-device facial sentiment detection and Gemini 1.5 Flash for generating short, growth-oriented advice each evening. The system is designed around a three-agent pipeline following the ReAct (Reason and Act) agentic workflow pattern.
+MirrorMind is a COPPA 2025-compliant emotional wellness app for children aged 8–14. It uses a three-agent AI pipeline to detect mood via facial expression, generate personalised counselling advice, and reflect on emotional patterns over time. Parents receive automatic safety alerts when a G2 trigger is detected.
 
 ---
 
-## Team
+## Features
 
-| Student ID | Name | Role |
+### Core AI Pipeline (Three-Agent System)
+
+| Agent | Model | Role |
 |---|---|---|
-| 2312266 | Zain Nutkani (Lead) | System architecture, agentic workflow, coordination |
-| 2312226 | Abdallah Kazi | Sentiment detection, camera integration |
-| 2312251 | Mustafa Panhwar | Counseling agent, Gemini API, advice corpus |
-| 2312234 | Hassan Khozema | Firebase setup, Firestore schema, Security Rules |
+| Sentiment Reflex Agent | Groq Llama 4 Scout (Vision) | Analyses front camera selfie, classifies mood in real time |
+| Counseling Agent | Groq Llama 3.1 8B | Generates one warm, age-appropriate advice sentence |
+| Reflection Agent | On-device (local JS) | Compares sessions, detects patterns, computes effectiveness score |
+
+### Mood Detection & Check-In
+- Front camera selfie analysed by Groq Vision AI
+- Detects: Happy, Calm, Sad, Anxious, Tired
+- User confirms or overrides the AI result
+- Advice generated immediately after confirmation
+- Effectiveness score (0–1) computed by comparing consecutive sessions
+
+### Dynamic Island Simulation
+- Black expanding pill animates from top of screen during scan
+- Shows mood emoji + label on detection ("Calm detected")
+- G2 safety alert triggers a separate red pill with parent notification status
+
+### G2 Safety Alert System
+- Triggers after 3 consecutive low-mood check-ins (sad/anxious/tired)
+- Dynamic Island red pill appears on screen with alert
+- Automatic email sent to saved parent email via EmailJS
+- Full email includes child account, date, and guidance message
+- COPPA 2025 compliant — no biometric data in alert
+
+### Parent Email Alerts
+- Parent email saved locally on device (AsyncStorage)
+- Set from the More > Parent Alert Email section
+- Automatic email fires silently when G2 triggers (EmailJS API)
+- Test button available to verify email works before a real trigger
+- EmailJS strict mode supported (Private Key authentication)
+
+### Dashboard
+- Greeting + hero gradient card showing today's mood
+- 4 stat tiles: Sessions, Streak, Positive %, This Week
+- iOS notification-style insight banner (reflection notices)
+- Horizontal mood trail showing last 7 days as emoji bubbles
+- Refreshes automatically every time you navigate to Home
+
+### Journal (History)
+- All sessions grouped by date
+- Mood distribution bar chart
+- Effectiveness progress bar per session
+- Filter by mood type
+
+### Family View
+- Weekly mood breakdown with colour-coded progress bars
+- G2 alert banner when triggered
+- COPPA compliance checklist
+- Average effectiveness score across sessions
+
+### iOS Light Wellness Theme
+- Fully light white background throughout (no dark mode)
+- Soft pastel gradient cards (Calm/Headspace-inspired)
+- Bold 32–42px editorial headers, light caption text
+- Mood tiles use full LinearGradient backgrounds per mood colour
+- Soft shadows (elevation 2–4) — no borders, no flat boxes
+- Native-style tab bar: hairline separator, no pill backgrounds, coloured active label only
+- Spring animations on card press (scale 0.96)
+- Haptic feedback on mood selection and successful detection
 
 ---
 
-## Technology Stack
+## Tech Stack
 
-| Component | Technology |
+| Technology | Use |
 |---|---|
-| Frontend | React Native (Expo SDK 54) |
-| Authentication | Firebase Auth (Email/Password) |
-| Database | Cloud Firestore |
-| Facial AI | Gemini 1.5 Flash Vision API |
-| Advice AI | Gemini 1.5 Flash Text API |
-| Runtime | Expo Go (Android) |
-
----
-
-## Three-Agent Pipeline
-
-```
-CAPTURE FRAME >> DETECT SENTIMENT >> CONFIRM MOOD >> GENERATE ADVICE >> REFLECT >> LOG SESSION
-     Camera        Gemini Vision        Child UI        Gemini Text       Reflection    Firestore
-```
-
-**Sentiment Reflex Agent** (`agents/counselingAgent.js` — `detectMoodFromPhoto`)
-Sends the camera frame as base64 to Gemini Vision API. Returns a SentimentLabel (happy, neutral, sad, tired, anxious). The child can confirm or override the detected mood via the mood selector UI.
-
-**Counseling Agent** (`agents/counselingAgent.js` — `generateAdvice`)
-Constructs a structured prompt from the current sentiment label and recent session history, then calls Gemini 1.5 Flash to produce one short, age-appropriate advice sentence (max 20 words). Falls back to a static corpus if the API is unavailable.
-
-**Reflection Agent** (implemented in `services/firestoreService.js`)
-Compares session history to determine improvement trends. If the last 3 sessions were all negative (sad, anxious, tired), triggers the G2 safety alert for the parent.
-
----
-
-## Firestore Schema
-
-```
-/users/{uid}
-    consentStatus:  String   -- 'granted'
-    sessionCount:   Integer
-    alertsEnabled:  Boolean
-    alertStatus:    String   -- 'normal' or 'alerted'
-    createdAt:      Timestamp
-
-/users/{uid}/sessions/{sid}
-    sentimentLabel:    String   -- e.g. 'happy', 'sad'
-    adviceText:        String   -- advice delivered this session
-    effectivenessFlag: Boolean  -- true if mood improved next session
-    timestamp:         Timestamp
-```
-
-No biometric data, facial image, or embedding is stored anywhere.
-
----
-
-## COPPA 2025 Compliance
-
-| Requirement | Implementation |
-|---|---|
-| Biometric ephemeralness | Camera frame is sent to Gemini API in memory and never written to any storage |
-| Data minimisation | Only sentimentLabel (String) and adviceText (String) persisted per session |
-| Parental consent | consentStatus field set to granted on registration |
-| Account deletion | Delete /users/{uid} document to remove all data |
+| React Native + Expo SDK 54 | Cross-platform mobile app |
+| Firebase Auth | User authentication |
+| Firebase Firestore | Session storage (labels + timestamps only) |
+| Groq API (Llama 4 Scout Vision) | Facial mood detection |
+| Groq API (Llama 3.1 8B) | Counselling advice generation |
+| Google Gemini 2.0 Flash | Backup advice model |
+| expo-linear-gradient | Gradient cards and mood tiles |
+| expo-haptics | Tactile feedback on interactions |
+| EmailJS | Automatic parent alert emails |
+| AsyncStorage | Local parent email storage |
 
 ---
 
@@ -88,51 +95,107 @@ No biometric data, facial image, or embedding is stored anywhere.
 
 ```
 mirrormind2/
-  App.js                          -- Firebase auth listener, screen routing
-  agents/
-    counselingAgent.js            -- Gemini Vision mood detection + advice generation
-  screens/
-    AuthScreen.js                 -- Parent login and registration UI
-    CheckInScreen.js              -- Camera, mood confirmation, advice display
-  services/
-    firebase.js                   -- Firebase app initialisation
-    firestoreService.js           -- All Firestore read/write operations
-  app.json                        -- Expo configuration
-  package.json                    -- Dependencies
+├── App.js                        # Root: auth, tab bar, navigation
+├── theme.js                      # Design system: colours, typography, spacing, shadows
+├── config.example.js             # Template for API credentials (copy to config.js)
+│
+├── agents/
+│   ├── counselingAgent.js        # Sentiment Reflex Agent + Counseling Agent
+│   └── reflectionAgent.js        # Reflection Agent + weekly alert logic
+│
+├── screens/
+│   ├── AuthScreen.js             # Login / Register (light iOS design)
+│   ├── DashboardScreen.js        # Home: hero card, stats, mood trail
+│   ├── CheckInScreen.js          # Camera, scan, confirm, result
+│   ├── HistoryScreen.js          # Session journal with filters
+│   ├── ParentAlertScreen.js      # Family view and weekly summary
+│   └── SettingsScreen.js         # Account, parent email, COPPA info
+│
+└── services/
+    ├── firebase.js               # Firebase app initialisation
+    ├── firestoreService.js       # All Firestore read/write operations
+    └── emailService.js           # EmailJS parent alert + AsyncStorage helpers
 ```
 
 ---
 
-## Getting Started
+## Setup Instructions
 
-### Prerequisites
-- Node.js 18+
-- Expo Go app installed on Android phone
-
-### Setup
-
+### 1. Clone the repo
 ```bash
-# 1. Clone the repository
 git clone https://github.com/bscs2312266-ZainNutkani/AI-Theory.git
 cd AI-Theory
-
-# 2. Install dependencies
 npm install
-
-# 3. Start the development server
-npx expo start --tunnel
-
-# 4. Scan the QR code with Expo Go on your Android phone
 ```
 
-### Firebase Configuration
-The app connects to Firebase project `mirrormind-hassan`. The `services/firebase.js` file contains the web app configuration. To run on a new machine, update the config values from the Firebase console.
+### 2. Set up API credentials
+```bash
+cp config.example.js config.js
+```
+Open `config.js` and fill in:
 
-### Gemini API Key
-The Gemini API key is stored in `agents/counselingAgent.js`. Get a free key from https://aistudio.google.com/app/apikey
+| Key | Where to get it |
+|---|---|
+| `GROQ_API_KEY` | https://console.groq.com > API Keys (free) |
+| `GEMINI_API_KEY` | https://aistudio.google.com > Get API Key (free) |
+| `EMAILJS_SERVICE_ID` | emailjs.com > Email Services > Gmail |
+| `EMAILJS_TEMPLATE_ID` | emailjs.com > Email Templates |
+| `EMAILJS_PUBLIC_KEY` | emailjs.com > Account > General |
+| `EMAILJS_PRIVATE_KEY` | emailjs.com > Account > General (needed for non-browser access) |
+
+### 3. Firebase setup
+- Create a Firebase project at https://console.firebase.google.com
+- Enable **Authentication** (Email/Password)
+- Enable **Firestore Database**
+- Copy your Firebase config into `services/firebase.js`
+
+### 4. EmailJS template setup
+In your EmailJS template, add these variables to the body:
+```
+To: {{to_email}}
+Subject: MirrorMind Safety Alert
+
+Hello,
+
+MirrorMind has detected 3 consecutive low-mood check-ins for {{child_email}}.
+
+{{message}}
+
+Date: {{date}}
+```
+In **Account > Security**, enable **"Allow non-browser environments"** and enter your Private Key.
+
+### 5. Run the app
+```bash
+npx expo start --clear
+```
+Scan the QR code with **Expo Go** on your phone (same WiFi as your laptop).
 
 ---
 
-## Textbook Reference
+## COPPA 2025 Compliance
 
-Russell, S. J., and Norvig, P. (2020). *Artificial Intelligence: A Modern Approach* (4th ed.). Pearson.
+| Requirement | Implementation |
+|---|---|
+| No biometric data stored | Base64 camera frame discarded immediately after Groq API call |
+| Minimal data collection | Only: sentimentLabel, adviceText, effectivenessScore, timestamp |
+| Right to erasure | deleteAllUserData() wipes all sessions + user profile atomically |
+| Parental consent | consentStatus field set on account creation |
+| No targeted advertising | None implemented or planned |
+| G2 safety trigger | Parent alerted after 3 consecutive low-mood sessions |
+
+---
+
+## Phase Completion
+
+- **Phase 1** — System design, COPPA spec, agent architecture
+- **Phase 2** — Firebase integration, user auth, data schema
+- **Phase 3** — Sentiment Reflex Agent (Groq Vision AI)
+- **Phase 4** — Counseling Agent + Reflection Agent
+- **Phase 5** — Parent alerts, effectiveness scoring, G2 trigger, full UI
+
+---
+
+## License
+
+Academic project — SZABIST CSC4101 Spring 2026. Not for commercial use.

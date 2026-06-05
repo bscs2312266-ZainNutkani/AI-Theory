@@ -1,0 +1,156 @@
+// ─────────────────────────────────────────────────────────────────────────────
+//  MirrorMind Design System — Light iOS Wellness Aesthetic
+//  Inspired by Calm, Headspace, Apple Health
+// ─────────────────────────────────────────────────────────────────────────────
+
+const p = {
+  snow:       '#FFFFFF',
+  cloud:      '#F9F8F6',
+  mist:       '#F2F0ED',
+  fog:        '#E8E6E2',
+  stone:      '#C8C5BF',
+  ink:        '#1A1825',
+  charcoal:   '#3D3B4E',
+  slate:      '#6B6880',
+  pewter:     '#9B99AB',
+  frost:      '#C4C2D0',
+  peach:      '#F4A56A',
+  amber:      '#F8C97A',
+  peachLight: '#FDE8C8',
+  peachPale:  '#FEF5EA',
+  cornflower: '#6B9FE4',
+  seafoam:    '#72CFBE',
+  skyLight:   '#C2D9F5',
+  skyPale:    '#EBF4FD',
+  periwinkle: '#7C94D4',
+  wisteria:   '#A99DD6',
+  lavLight:   '#D0CBE8',
+  lavPale:    '#EEEbF7',
+  terracotta: '#E07A5F',
+  blush:      '#F0A89A',
+  blushLight: '#F8D5CE',
+  blushPale:  '#FDF0EE',
+  mauve:      '#9B8AB0',
+  greyLilac:  '#B8AECE',
+  mauveLight: '#DDD8E8',
+  mauvePale:  '#F3F0F8',
+  indigo:     '#5A67D8',
+  sage:       '#68B29A',
+  rose:       '#E07A8A',
+  goldenrod:  '#E8A840',
+};
+
+export const C = {
+  bg:         p.cloud,
+  bgAlt:      p.mist,
+  bgDeep:     p.fog,
+  surface:    p.snow,
+  label:      p.ink,
+  label2:     p.charcoal,
+  label3:     p.slate,
+  label4:     p.pewter,
+  labelMuted: p.frost,
+  sep:        p.fog,
+  border:     p.stone,
+  accent:     p.indigo,
+  accentSoft: '#EEF0FC',
+  success:    p.sage,
+  warning:    p.goldenrod,
+  danger:     p.rose,
+  blue:       p.cornflower,
+  green:      p.sage,
+  yellow:     p.amber,
+  red:        p.terracotta,
+  purple:     p.wisteria,
+  teal:       p.seafoam,
+  indigo:     p.indigo,
+  pink:       p.rose,
+  orange:     p.peach,
+};
+
+export const MOOD = {
+  happy: {
+    emoji:      '😊',
+    label:      'Happy',
+    color:      p.peach,
+    colorLight: p.peachLight,
+    colorPale:  p.peachPale,
+    gradStart:  p.peach,
+    gradEnd:    p.amber,
+    desc:       "You're radiating warmth and good energy today.",
+  },
+  neutral: {
+    emoji:      '😌',
+    label:      'Calm',
+    color:      p.cornflower,
+    colorLight: p.skyLight,
+    colorPale:  p.skyPale,
+    gradStart:  p.cornflower,
+    gradEnd:    p.seafoam,
+    desc:       'A steady, grounded state of mind.',
+  },
+  sad: {
+    emoji:      '😢',
+    label:      'Sad',
+    color:      p.periwinkle,
+    colorLight: p.lavLight,
+    colorPale:  p.lavPale,
+    gradStart:  p.periwinkle,
+    gradEnd:    p.wisteria,
+    desc:       "It's okay to feel this. You're not alone.",
+  },
+  anxious: {
+    emoji:      '😰',
+    label:      'Anxious',
+    color:      p.terracotta,
+    colorLight: p.blushLight,
+    colorPale:  p.blushPale,
+    gradStart:  p.terracotta,
+    gradEnd:    p.blush,
+    desc:       "Take a breath. You're safe here.",
+  },
+  tired: {
+    emoji:      '😴',
+    label:      'Tired',
+    color:      p.mauve,
+    colorLight: p.mauveLight,
+    colorPale:  p.mauvePale,
+    gradStart:  p.mauve,
+    gradEnd:    p.greyLilac,
+    desc:       'Rest is your superpower today.',
+  },
+};
+
+export const HERO_DEFAULT = {
+  gradStart: p.cornflower,
+  gradEnd:   p.seafoam,
+  emoji:     '🌿',
+  label:     'New Day',
+};
+
+export const TYPE = {
+  screenTitle: { fontSize: 32, fontWeight: '700', letterSpacing: -0.8 },
+  heroTitle:   { fontSize: 26, fontWeight: '700', letterSpacing: -0.5, lineHeight: 32 },
+  sectionHead: { fontSize: 18, fontWeight: '600', letterSpacing: -0.2 },
+  cardTitle:   { fontSize: 16, fontWeight: '600', letterSpacing: -0.1 },
+  body:        { fontSize: 14, fontWeight: '400', lineHeight: 20 },
+  caption:     { fontSize: 12, fontWeight: '400', lineHeight: 16 },
+  micro:       { fontSize: 11, fontWeight: '600', letterSpacing: 0.6 },
+  statNumber:  { fontSize: 26, fontWeight: '700', letterSpacing: -0.5 },
+};
+
+export const S = {
+  screenPad:    20,
+  sectionGap:   28,
+  cardGap:      12,
+  cardRadius:   20,
+  cardRadiusLg: 24,
+  pillRadius:   50,
+};
+
+export const SHADOW = {
+  xs: { shadowColor: p.ink, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4,  elevation: 1 },
+  sm: { shadowColor: p.ink, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 10, elevation: 2 },
+  md: { shadowColor: p.ink, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.09, shadowRadius: 16, elevation: 4 },
+  lg: { shadowColor: p.ink, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.11, shadowRadius: 24, elevation: 6 },
+};

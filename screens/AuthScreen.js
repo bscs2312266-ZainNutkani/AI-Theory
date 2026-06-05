@@ -2,20 +2,22 @@ import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, ActivityIndicator, Alert,
-  KeyboardAvoidingView, Platform, StatusBar,
+  KeyboardAvoidingView, Platform, StatusBar, ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import { ensureUserProfile } from '../services/firestoreService';
+import { C, SHADOW, TYPE, S } from '../theme';
 
 export default function AuthScreen({ onLogin }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail]         = useState('');
+  const [password, setPassword]   = useState('');
+  const [loading, setLoading]     = useState(false);
   const [isRegister, setIsRegister] = useState(false);
 
   async function handleSubmit() {
-    if (!email || !password) { Alert.alert('Error', 'Please enter email and password.'); return; }
+    if (!email || !password) { Alert.alert('Missing fields', 'Please enter your email and password.'); return; }
     setLoading(true);
     try {
       let result;
@@ -34,78 +36,170 @@ export default function AuthScreen({ onLogin }) {
   }
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0a1a" />
-      <View style={styles.logoArea}>
-        <View style={styles.logoOrb}>
-          <Text style={styles.logoEmoji}>🪞</Text>
+    <KeyboardAvoidingView
+      style={styles.root}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Logo / hero area */}
+        <View style={styles.hero}>
+          <LinearGradient
+            colors={[C.blue, C.teal]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.logoWrap, SHADOW.md]}
+          >
+            <Text style={styles.logoEmoji}>🪞</Text>
+          </LinearGradient>
+          <Text style={styles.appName}>MirrorMind</Text>
+          <Text style={styles.appTagline}>Your daily reflection companion</Text>
         </View>
-        <Text style={styles.title}>MirrorMind</Text>
-        <Text style={styles.subtitle}>EMOTIONAL INTELLIGENCE AI</Text>
-      </View>
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>{isRegister ? 'Create Account' : 'Welcome Back'}</Text>
-        <View style={styles.inputWrap}>
-          <Text style={styles.inputLabel}>EMAIL</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="your@email.com"
-            placeholderTextColor="#333"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
-        <View style={styles.inputWrap}>
-          <Text style={styles.inputLabel}>PASSWORD</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="••••••••"
-            placeholderTextColor="#333"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
-        <TouchableOpacity style={styles.btn} onPress={handleSubmit} disabled={loading} activeOpacity={0.8}>
-          {loading
-            ? <ActivityIndicator color="#0a0a1a" />
-            : <Text style={styles.btnText}>{isRegister ? 'CREATE ACCOUNT' : 'LOGIN'}</Text>
-          }
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setIsRegister(!isRegister)} style={styles.toggle}>
-          <Text style={styles.toggleText}>
-            {isRegister ? 'Already have an account? ' : "Don't have an account? "}
-            <Text style={styles.toggleLink}>{isRegister ? 'Login' : 'Register'}</Text>
+
+        {/* Auth card */}
+        <View style={[styles.card, SHADOW.md]}>
+          <Text style={styles.cardTitle}>
+            {isRegister ? 'Create Account' : 'Welcome back'}
           </Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.footer}>CSC4101  ·  SZABIST  ·  Spring 2026</Text>
+          <Text style={styles.cardSub}>
+            {isRegister
+              ? 'Start your emotional wellness journey'
+              : 'Continue your reflection practice'}
+          </Text>
+
+          {/* Email */}
+          <View style={styles.fieldWrap}>
+            <Text style={styles.fieldLabel}>EMAIL</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="your@email.com"
+              placeholderTextColor={C.label4}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoCorrect={false}
+            />
+          </View>
+
+          {/* Password */}
+          <View style={styles.fieldWrap}>
+            <Text style={styles.fieldLabel}>PASSWORD</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              placeholderTextColor={C.label4}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
+
+          {/* Primary button */}
+          <TouchableOpacity
+            style={[styles.submitBtn, SHADOW.sm, loading && { opacity: 0.6 }]}
+            onPress={handleSubmit}
+            disabled={loading}
+            activeOpacity={0.85}
+          >
+            {loading
+              ? <ActivityIndicator color="#fff" />
+              : <Text style={styles.submitBtnText}>
+                  {isRegister ? 'Create Account' : 'Sign In'}
+                </Text>
+            }
+          </TouchableOpacity>
+
+          {/* Toggle */}
+          <TouchableOpacity
+            style={styles.toggleRow}
+            onPress={() => setIsRegister(!isRegister)}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.toggleText}>
+              {isRegister ? 'Already have an account? ' : "Don't have an account? "}
+              <Text style={styles.toggleLink}>
+                {isRegister ? 'Sign In' : 'Register'}
+              </Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Features row */}
+        <View style={styles.featuresRow}>
+          {[
+            { icon: '🤖', label: 'AI Mood Scan'  },
+            { icon: '🔒', label: 'COPPA 2025'    },
+            { icon: '📊', label: 'Daily Insights' },
+          ].map((f, i) => (
+            <View key={i} style={[styles.featureChip, SHADOW.xs]}>
+              <Text style={styles.featureIcon}>{f.icon}</Text>
+              <Text style={styles.featureLabel}>{f.label}</Text>
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.footer}>CSC4101 · SZABIST · Spring 2026</Text>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0a0a1a', justifyContent: 'center', padding: 24 },
-  logoArea: { alignItems: 'center', marginBottom: 36 },
-  logoOrb: {
-    width: 90, height: 90, borderRadius: 45,
-    backgroundColor: '#0d1a2e', borderWidth: 2, borderColor: '#00D4FF',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+  root:   { flex: 1, backgroundColor: C.bg },
+  scroll: { flexGrow: 1, paddingHorizontal: S.screenPad, paddingTop: 60, paddingBottom: 32, justifyContent: 'center' },
+
+  // Hero
+  hero: { alignItems: 'center', marginBottom: 36 },
+  logoWrap: { width: 88, height: 88, borderRadius: 26, alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
+  logoEmoji:  { fontSize: 42 },
+  appName:    { ...TYPE.screenTitle, color: C.label, marginBottom: 6 },
+  appTagline: { ...TYPE.body, color: C.label3, textAlign: 'center' },
+
+  // Card
+  card: {
+    backgroundColor: C.surface, borderRadius: S.cardRadiusLg,
+    padding: 24, marginBottom: 20,
   },
-  logoEmoji: { fontSize: 40 },
-  title: { color: '#fff', fontSize: 32, fontWeight: 'bold', letterSpacing: 2, marginBottom: 4 },
-  subtitle: { color: '#00D4FF', fontSize: 9, letterSpacing: 4 },
-  card: { backgroundColor: '#0d0d2b', borderRadius: 24, padding: 24, borderWidth: 1, borderColor: '#1a1a3e' },
-  cardTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold', marginBottom: 24, letterSpacing: 1 },
-  inputWrap: { marginBottom: 16 },
-  inputLabel: { color: '#333', fontSize: 10, letterSpacing: 2, marginBottom: 8 },
-  input: { backgroundColor: '#111', borderWidth: 1, borderColor: '#1a1a3e', borderRadius: 12, padding: 14, fontSize: 15, color: '#fff' },
-  btn: { backgroundColor: '#00D4FF', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8, marginBottom: 16 },
-  btnText: { color: '#0a0a1a', fontSize: 14, fontWeight: 'bold', letterSpacing: 2 },
-  toggle: { alignItems: 'center' },
-  toggleText: { color: '#444', fontSize: 13 },
-  toggleLink: { color: '#00D4FF', fontWeight: 'bold' },
-  footer: { color: '#222', textAlign: 'center', fontSize: 10, letterSpacing: 1, marginTop: 24 },
+  cardTitle: { ...TYPE.sectionHead, color: C.label, marginBottom: 4 },
+  cardSub:   { ...TYPE.caption, color: C.label3, marginBottom: 24 },
+
+  // Fields
+  fieldWrap:  { marginBottom: 16 },
+  fieldLabel: { ...TYPE.micro, color: C.label3, marginBottom: 8, letterSpacing: 0.8 },
+  input: {
+    backgroundColor: C.bgAlt, borderRadius: 14, padding: 14,
+    fontSize: 15, color: C.label, fontWeight: '400',
+    borderWidth: 1, borderColor: C.sep,
+    minHeight: 50,
+  },
+
+  // Submit
+  submitBtn: {
+    backgroundColor: C.label, borderRadius: S.pillRadius,
+    paddingVertical: 17, alignItems: 'center',
+    marginTop: 6, marginBottom: 20,
+    minHeight: 54,
+  },
+  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+
+  // Toggle
+  toggleRow:  { alignItems: 'center', paddingVertical: 4 },
+  toggleText: { ...TYPE.body, color: C.label3 },
+  toggleLink: { color: C.accent, fontWeight: '700' },
+
+  // Features
+  featuresRow: { flexDirection: 'row', gap: 8, justifyContent: 'center', marginBottom: 24 },
+  featureChip: {
+    backgroundColor: C.surface, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 10,
+    alignItems: 'center', gap: 4,
+  },
+  featureIcon:  { fontSize: 20 },
+  featureLabel: { ...TYPE.micro, color: C.label3, fontSize: 10 },
+
+  footer: { ...TYPE.micro, color: C.labelMuted, textAlign: 'center', fontSize: 10 },
 });
