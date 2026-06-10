@@ -27,7 +27,7 @@ export default function AuthScreen({ onLogin }) {
         result = await signInWithEmailAndPassword(auth, email, password);
       }
       await ensureUserProfile(result.user.uid);
-      onLogin(result.user.uid);
+      onLogin(result.user);
     } catch (e) {
       Alert.alert('Error', e.message);
     } finally {
